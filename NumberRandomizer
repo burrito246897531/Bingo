@@ -1,0 +1,67 @@
+import java.util.Random;
+import java.util.ArrayList;
+
+public class NumberRandomizer {
+	
+	private int oGseed;
+	private int seed;
+	private Random r;
+	
+	private int[] hopper;
+	private int ballNum = 0;
+	
+	public NumberRandomizer(int s) {
+		
+		oGseed = s;
+		r = new Random(s);
+		
+		createHopper();
+		
+	}
+	
+	public int gN(int col) {
+		return 0;
+	}
+	
+	public String[] gC(int col) {
+		String[] out = new String[5];
+		for (int i = 0; i < 5; i++) {
+			out[i] = "" + (r.nextInt(15) + col * 15 + 1);
+		}
+		while (hasRepeats(out)) {
+			out = gC(col);
+		}
+		return out;
+	}
+	
+	private boolean hasRepeats(String[] arr) {
+		int b = 1;
+		for (int i = 0; i < 4; i++) {
+			b = 1;
+			while (b < 5 - i) {
+				if (arr[i].equals(arr[b + i])) 
+					return true;
+				b++;
+			}
+		}
+		return false;
+	}
+	
+	private void createHopper() {
+		ArrayList<Integer> balls = new ArrayList<>();
+		for (int i = 1; i <= 75; i++) {
+			balls.add(i);
+		}
+		hopper = new int[75];
+		for (int i = 0; i < 75; i++) {
+			int nextBall = r.nextInt(75 - i);
+			hopper[i] = balls.remove(nextBall);
+		}		
+	}
+	
+	public int gNB() {
+		ballNum++;
+		return hopper[ballNum - 1];
+	}
+	
+}
