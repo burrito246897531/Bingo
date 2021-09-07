@@ -1,0 +1,14 @@
+
+public class Main {
+
+	public static void main(String args[]) {
+		
+		//BingoCard bc = new BingoCard();
+		
+		NumberRandomizer nr = new NumberRandomizer(10);
+		nr.gNB();
+
+	}
+	
+	
+}
