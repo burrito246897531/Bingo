@@ -1,0 +1,37 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class BingoCardPanel extends JPanel {
+	
+	public BingoCardPanel() {
+
+
+	}
+	
+	public void paint(Graphics g) {
+		
+		int sl = 75, ib = 4, ob = 25;
+		int w = 1600, h = 960;
+		int cw = 5 * sl + 4 * ib + 2 * ob, ch = 6 * sl + 5 * ib + 2 * ob;
+		int x = 0, y = 1;
+		int[] sp = {(w - cw) / 2, (h - ch) / 2};
+		int[] sq = {sp[x] + ob + ib, sp[y] + ob + sl + 2*ib};
+		int f = sl - 10;
+		
+		g.clearRect(0, 0, w, h);
+		g.setColor(Color.black);
+		g.fillRect(sp[x], sp[y], cw, ch);
+		g.setColor(Color.yellow);
+		g.fillRect(sp[x] + ib, sp[y] + ib, cw - 2*ib, ch - 2*ib);
+		g.setColor(Color.black);
+		g.fillRect(sp[x] + ob - ib, sp[y] + ob + sl, cw - 2*(ob - ib), cw - 2*(ob - ib));
+
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				g.clearRect(sq[x] + sl*i + ib*(i - 1), sq[y] + sl*j + ib*(j - 1), sl, sl);
+			}
+		}
+		
+	}
+	
+}
