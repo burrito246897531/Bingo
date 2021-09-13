@@ -9,8 +9,13 @@ public class BingoCard extends JFrame {
 	
 	private String[][] grid;
 	
-	private Container window;
+	private JLabel prompt, notice;
+	private JTextField tf;
+	private JButton b;
+	private BingoCardPanel bcp;
+	
 	private int screen = 0;
+	private boolean running = true;
 	
 	private int gameNumber;
 	
@@ -25,15 +30,50 @@ public class BingoCard extends JFrame {
 	
 	public BingoCard() {
 		super("Bingo Card Creation");
-		window = getContentPane();
-
-		if (screen == 0)
-			userInput();
-		else if (screen == 1)
-			bingoCard();
+		setSize(WIDTH, HEIGHT);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		/*setLayout(null);
+		Font sf = new Font("", Font.PLAIN, 20);
+		
+		prompt = new JLabel("Enter an integer seed into the pink box and click generate");
+		prompt.setFont(sf);
+		prompt.setBounds(25, 25, 800, 45);
+		add(prompt);
+		
+		tf = new JTextField("");
+		tf.setFont(sf);
+		tf.setBackground(Color.pink);
+		tf.setOpaque(true);
+		tf.setBounds(25, 75, 120, 45);
+		add(tf);
+		
+		notice = new JLabel("", SwingConstants.CENTER);
+		notice.setFont(new Font("", Font.PLAIN, 20));
+		notice.setBounds(150, 75, 200, 45);
+		add(notice);
+		
+		b = new JButton("Generate");
+		b.setFont(new Font("", Font.PLAIN, 20));
+		b.setBackground(Color.green);
+		b.setOpaque(true);
+		b.setBounds(25, 125, 120, 45);
+		b.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) { 
+	    			getUserInput();
+	    	}  
+	    }); 
+		add(b);*/
+		
+		bcp = new BingoCardPanel(1);
+		add(bcp);
+		
+		setVisible(true);    
 	}
 	
-	private void userInput() {
+	/*private void userInput() {
+		
+		window.setLayout(null);
 		
 		JLabel prompt = new JLabel("Type an integer seed in pink box below, then click Generate");
 		prompt.setFont(new Font("", Font.PLAIN, 20));
@@ -63,8 +103,8 @@ public class BingoCard extends JFrame {
 		    		int gridSeed = Integer.parseInt(tf.getText());
 		    		gameNumber = gridSeed;
 		    		generateGrid(gridSeed);
-		    		screen = 1;
 		    		bingoCard();
+		    		screen = 1;
 		    		window.remove(prompt);
 		    		window.remove(tf);
 		    		window.remove(notice);
@@ -79,15 +119,16 @@ public class BingoCard extends JFrame {
 	    }); 
 		window.add(b);
 
-		JLabel dummy = new JLabel("");
-		window.add(dummy);
-		
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setVisible(true);
 	}
 	
 	private void bingoCard() {
+		
+		window.setLayout(null);
+		
+		window.add(new BingoCardPanel());
 		
 		JLabel gameNumberID = new JLabel("Game Number: " + gameNumber);
 		gameNumberID.setFont(new Font("", Font.PLAIN, 20));
@@ -116,11 +157,11 @@ public class BingoCard extends JFrame {
 			    window.add(label);
 			}
 		}
-		add(new BingoCardPanel());
+		
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setVisible(true);
-	}
+	    //setVisible(true);
+	}*/
 	
 	private void generateGrid(int s) {
 		NumberRandomizer nr = new NumberRandomizer(s);
@@ -131,7 +172,19 @@ public class BingoCard extends JFrame {
 		grid[2][2] = "FR\nEE";
 	}
 	
-	
+	public void getUserInput() {
+    	try {
+    		int gridSeed = Integer.parseInt(tf.getText());
+    		gameNumber = gridSeed;
+    		System.out.println(gameNumber);
+    	}
+    	catch (Exception ex) {
+    		notice.setText("INVALID INPUT");
+    		notice.setBackground(Color.red);
+    		notice.setOpaque(true);
+    	}
+    	
+	}
 	
 	
 }
