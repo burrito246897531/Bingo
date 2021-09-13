@@ -1,0 +1,72 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+
+public class UserInputPanel extends JPanel implements ActionListener {
+	
+	private int seed;
+	private boolean gettingUserInput = true;
+	
+	private JLabel prompt, notice;
+	private JTextField tf;
+	private JButton b;
+	
+	public UserInputPanel() {
+	
+		setLayout(null);
+		Font sf = new Font("", Font.PLAIN, 20);
+		
+		prompt = new JLabel("Enter an integer seed into the pink box and click generate");
+		prompt.setFont(sf);
+		prompt.setBounds(25, 25, 800, 45);
+		add(prompt);
+		
+		tf = new JTextField("");
+		tf.setFont(sf);
+		tf.setBackground(Color.pink);
+		tf.setOpaque(true);
+		tf.setBounds(25, 75, 120, 45);
+		add(tf);
+		
+		notice = new JLabel("", SwingConstants.CENTER);
+		notice.setFont(new Font("", Font.PLAIN, 20));
+		notice.setBounds(150, 75, 200, 45);
+		add(notice);
+		
+		b = new JButton("Generate");
+		b.setFont(new Font("", Font.PLAIN, 20));
+		b.setBackground(Color.green);
+		b.setOpaque(true);
+		b.setBounds(25, 125, 120, 45);
+		b.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) { 
+	    			getUserInput();
+	    	}  
+	    }); 
+		add(b);
+		
+		
+	}
+	
+	public void getUserInput() {
+    	try {
+    		int gridSeed = Integer.parseInt(tf.getText());
+    		seed = gridSeed;
+    		gettingUserInput = false;
+    		System.out.println(seed);
+    	}
+    	catch (Exception ex) {
+    		notice.setText("INVALID INPUT");
+    		notice.setBackground(Color.red);
+    		notice.setOpaque(true);
+    	}
+	}
+	
+	public boolean gi() { return gettingUserInput; }
+	public int gs() { return seed; }
+	
+    public void actionPerformed(ActionEvent e) {}	
+    	
+}
+
+	
