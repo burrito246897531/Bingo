@@ -3,84 +3,115 @@ import javax.swing.*;
 
 public class BingoCardPanel extends JPanel {
 	
-	private int screen = 1;
-	
-	private String[][] grid;
+	private String[][] grid = new String[5][5];
+	private boolean[][] markGrid = new boolean[5][5];
 	private String[] let = {"B", "I", "N", "G", "O"};
+	private String ballNumber;
+	private int ballDraws;
 	
-	public BingoCardPanel(int s) {
-		
-		
-		setLayout(null);
-		
-		JLabel test = new JLabel("testing");
-		test.setBounds(100, 100, 200, 200);
-		add(test);
-		
-		setVisible(true);
-		
-		generateGrid(s);
-
+	private boolean won;
+	
+	int sl = 75, ib = 4, ob = 25;
+	int w = 1200, h = 960;
+	int cw = 5 * sl + 4 * ib + 2 * ob, ch = 6 * sl + 5 * ib + 2 * ob;
+	int x = 0, y = 1;
+	int[] sp = {(w - cw) / 2, (h - ch) / 2};
+	int[] sq = {sp[x] + ob, sp[y] + ob + sl + ib};
+	int f = sl - 25;
+	
+	public BingoCardPanel(int[][] g) {
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				grid[i][j] = "" + g[i][j];
+			}
+		}
+		grid[2][2] = "";
+		markGrid[2][2] = true;
 	}
 	
 	public void paint(Graphics g) {
-		
-		int sl = 75, ib = 4, ob = 25;
-		int w = 1600, h = 960;
-		int cw = 5 * sl + 4 * ib + 2 * ob, ch = 6 * sl + 5 * ib + 2 * ob;
-		int x = 0, y = 1;
-		int[] sp = {(w - cw) / 2, (h - ch) / 2};
-		int[] sq = {sp[x] + ob, sp[y] + ob + sl + ib};
-		int f = sl - 25;
-		
-		if (screen == 1) {
-			g.setColor(Color.black);
-			g.fillRect(sp[x], sp[y], cw, ch);
-			g.setColor(Color.white);
-			g.fillRect(sp[x] + ib, sp[y] + ib, cw - 2*ib, ch - 2*ib);
-			g.setColor(Color.black);
-			g.fillRect(sp[x] + ob - ib, sp[y] + ob + sl, cw - 2*(ob - ib), cw - 2*(ob - ib));
-			g.setColor(Color.white);
-			g.fillRect(sq[x], sq[y], 5*sl + 4*ib, 5*sl + 4*ib);
+
+		g.setColor(Color.black);
+		g.fillRect(sp[x], sp[y], cw, ch);
+		g.setColor(new Color(0, 255, 0));
+		g.fillRect(sp[x] + ib, sp[y] + ib, cw - 2*ib, ch - 2*ib);
+		g.setColor(Color.black);
+		g.fillRect(sp[x] + ob - ib, sp[y] + ob + sl, cw - 2*(ob - ib), cw - 2*(ob - ib));
+		g.setColor(Color.white);
+		g.fillRect(sq[x], sq[y], 5*sl + 4*ib, 5*sl + 4*ib);
 			
-			g.setColor(Color.black);
-			for (int i = 0; i < 4; i++) {
-				g.fillRect(sq[x] + (i+1)*sl + i*ib, sq[y], ib, 5*sl + 4*ib);
-				g.fillRect(sq[x], sq[y] + (i+1)*sl + i*ib, 5*sl + 4*ib, ib);
-			}
-	
-			Font cs = new Font("Comic Sans MS", Font.PLAIN, f);
-			g.setFont(cs);
-			FontMetrics m = g.getFontMetrics(cs);
-			for (int i = 0; i < 5; i++) {
-				
-				g.drawString(let[i], sp[x] + ob + sl*i + ib*i + sl/2 - m.stringWidth(let[i])/2, sp[y] + ob + sl/2 + f/2);
-				
-				for (int j = 0; j < 5; j++) {
-					
-					g.drawString(grid[i][j], sq[x] + sl*i + ib*i + sl/2 - m.stringWidth(grid[i][j])/2, sq[y] + sl*j + ib*j + sl/2 + f/2 - ib);
-					
-				}
-			}
-			Font cs2 = new Font("Comic Sans MS", Font.PLAIN, f/2);
-			g.setFont(cs2);
-			FontMetrics m2 = g.getFontMetrics(cs2);
-			g.drawString("FREE", sq[x] + sl*2 + ib*2 + sl/2 - m2.stringWidth("FREE")/2, sq[y] + sl*2 + ib*2 + sl/2 + f/4);
+		g.setColor(Color.black);
+		for (int i = 0; i < 4; i++) {
+			g.fillRect(sq[x] + (i+1)*sl + i*ib, sq[y], ib, 5*sl + 4*ib);
+			g.fillRect(sq[x], sq[y] + (i+1)*sl + i*ib, 5*sl + 4*ib, ib);
 		}
-		
-		
-		
-	}
 	
-	private void generateGrid(int s) {
-		NumberRandomizer nr = new NumberRandomizer(s);
-		grid = new String[5][5];
+		Font cs = new Font("Comic Sans MS", Font.PLAIN, f);
+		g.setFont(cs);
+		FontMetrics m = g.getFontMetrics(cs);
 		for (int i = 0; i < 5; i++) {
-			grid[i] = nr.gC(i);
+			
+			g.drawString(let[i], sp[x] + ob + sl*i + ib*i + sl/2 - m.stringWidth(let[i])/2, sp[y] + ob + sl/2 + f/2);
+			
+			for (int j = 0; j < 5; j++) {
+				
+				g.drawString(grid[i][j], sq[x] + sl*i + ib*i + sl/2 - m.stringWidth(grid[i][j])/2, sq[y] + sl*j + ib*j + sl/2 + f/2 - ib);
+				
+			}
 		}
-		grid[2][2] = "";
+		Font cs2 = new Font("Comic Sans MS", Font.PLAIN, f/2);
+		g.setFont(cs2);
+		FontMetrics m2 = g.getFontMetrics(cs2);
+		g.drawString("FREE", sq[x] + sl*2 + ib*2 + sl/2 - m2.stringWidth("FREE")/2, sq[y] + sl*2 + ib*2 + sl/2 + f/4);
+		
+		g.setFont(cs);
+		if (ballNumber != null) {
+			g.setColor(Color.black);
+			g.fillOval(sp[x] - 175, sp[y] + 45, 130, 130);
+			g.setColor(Color.blue);
+			g.fillOval(sp[x] - 170, sp[y] + 50, 120, 120);
+			g.setColor(Color.white);
+			g.drawString(ballNumber, sp[x] - 110 - m.stringWidth(ballNumber)/2, sp[y] + 110 + f/2);
+		}
+		
+		g.setColor(Color.red);
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {			
+				if (markGrid[i][j])
+					g.fillOval(sq[x] + sl*i + ib*i + ib, sq[y] + sl*j + ib*j + ib, sl - 2*ib, sl - 2*ib);
+			}
+		}
+		
+		if (won) {
+			g.setColor(Color.black);
+			Font wincs = new Font("Comic Sans MS", Font.PLAIN, 100);
+			g.setFont(wincs);
+			FontMetrics m3 = g.getFontMetrics(wincs);
+			g.drawString("You win!", (w - m3.stringWidth("You win!"))/2, sp[y] - 50);
+		}
+		
+		g.setColor(Color.black);
+		g.clearRect(sp[x] - 210, sp[y] + ch - 70, 200, 20);
+		g.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+		g.drawString("Ball draws: " + ballDraws, sp[x] - 210, sp[y] + ch - 50);
+	}	
+
+	public void draw(String n) {
+		ballNumber = n;
+		ballDraws++;
+		repaint();
 	}
 	
-	public void setScreen(int s) { screen = s; }
+	public void mark(int x, int y) {
+		if (!markGrid[x][y]) 
+			markGrid[x][y] = true;
+		else
+			markGrid[x][y] = false;
+		repaint();
+	}
 	
+	public void declareWin() {
+		won = true;
+		repaint();
+	}
 }
