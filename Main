@@ -1,13 +1,12 @@
 
 public class Main {
 
+	static BingoCard bc;
+	
 	public static void main(String args[]) {
 		
-		//BingoCard bc = new BingoCard();
+		bc = new BingoCard();
 		
-		NumberRandomizer nr = new NumberRandomizer(10);
-		nr.gNB();
-
 	}
 	
 	
