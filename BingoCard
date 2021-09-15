@@ -4,18 +4,25 @@ import javax.swing.*;
 
 public class BingoCard extends JFrame {
 
-	private static final int WIDTH = 1600;
+	private static final int WIDTH = 1200;
 	private static final int HEIGHT = 960;
 	
-	private String[][] grid;
+	private NumberRandomizer nr;
+	private int[][] grid;
+	private boolean[][] markGrid;
+	private int[] hopperInts;
+	private String[] hopper;
+	private int ballNo = 0;
+	private String[] let = {"B", "I", "N", "G", "O"};
+	private boolean won;
 	
-	private JLabel prompt, notice;
+	private JLabel prompt, notice, gnlabel;
 	private JTextField tf;
-	private JButton b;
+	private JButton inputb, drawb;
 	private BingoCardPanel bcp;
 	
 	private int screen = 0;
-	private boolean running = true;
+	private Font sf = new Font("Comic Sans MS", Font.PLAIN, 20);
 	
 	private int gameNumber;
 	
@@ -24,152 +31,53 @@ public class BingoCard extends JFrame {
 	int cw = 5 * sl + 4 * ib + 2 * ob, ch = 6 * sl + 5 * ib + 2 * ob;
 	int x = 0, y = 1;
 	int[] sp = {(w - cw) / 2, (h - ch) / 2};
-	int[] sq = {sp[x] + ob + ib, sp[y] + ob + sl + 2*ib};
+	int[] sq = {sp[x] + ob, sp[y] + ob + sl + ib};
 	int f = sl - 25;
-	String[] let = {"B", "I", "N", "G", "O"};
 	
 	public BingoCard() {
 		super("Bingo Card Creation");
 		setSize(WIDTH, HEIGHT);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 		
-		/*setLayout(null);
-		Font sf = new Font("", Font.PLAIN, 20);
+		setLayout(null);
 		
-		prompt = new JLabel("Enter an integer seed into the pink box and click generate");
-		prompt.setFont(sf);
-		prompt.setBounds(25, 25, 800, 45);
-		add(prompt);
-		
-		tf = new JTextField("");
-		tf.setFont(sf);
-		tf.setBackground(Color.pink);
-		tf.setOpaque(true);
-		tf.setBounds(25, 75, 120, 45);
-		add(tf);
-		
-		notice = new JLabel("", SwingConstants.CENTER);
-		notice.setFont(new Font("", Font.PLAIN, 20));
-		notice.setBounds(150, 75, 200, 45);
-		add(notice);
-		
-		b = new JButton("Generate");
-		b.setFont(new Font("", Font.PLAIN, 20));
-		b.setBackground(Color.green);
-		b.setOpaque(true);
-		b.setBounds(25, 125, 120, 45);
-		b.addActionListener(new ActionListener() { 
-			  public void actionPerformed(ActionEvent e) { 
-	    			getUserInput();
-	    	}  
-	    }); 
-		add(b);*/
-		
-		bcp = new BingoCardPanel(1);
-		add(bcp);
-		
-		setVisible(true);    
-	}
-	
-	/*private void userInput() {
-		
-		window.setLayout(null);
-		
-		JLabel prompt = new JLabel("Type an integer seed in pink box below, then click Generate");
-		prompt.setFont(new Font("", Font.PLAIN, 20));
-		prompt.setBounds(25, 25, w, 45);
-		window.add(prompt);
-		
-		JTextField tf = new JTextField("");
-		tf.setFont(new Font("", Font.PLAIN, 20));
-		tf.setBackground(Color.pink);
-		tf.setOpaque(true);
-		tf.setBounds(25, 75, 120, 45);
-		window.add(tf);
-		
-		JLabel notice = new JLabel("", SwingConstants.CENTER);
-		notice.setFont(new Font("", Font.PLAIN, 20));
-		notice.setBounds(150, 75, 200, 45);
-		window.add(notice);
-		
-		JButton b = new JButton("Generate");
-		b.setFont(new Font("", Font.PLAIN, 20));
-		b.setBackground(Color.green);
-		b.setOpaque(true);
-		b.setBounds(25, 125, 120, 45);
-	    b.addActionListener(new ActionListener(){  
-	    	public void actionPerformed(ActionEvent e){  
-		    	try {
-		    		int gridSeed = Integer.parseInt(tf.getText());
-		    		gameNumber = gridSeed;
-		    		generateGrid(gridSeed);
-		    		bingoCard();
-		    		screen = 1;
-		    		window.remove(prompt);
-		    		window.remove(tf);
-		    		window.remove(notice);
-		    		window.remove(b);
-		    	}
-		    	catch (Exception ex) {
-		    		notice.setText("INVALID INPUT");
-		    		notice.setBackground(Color.red);
-		    		notice.setOpaque(true);
-		    	}
-	    	}  
-	    }); 
-		window.add(b);
-
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setVisible(true);
-	}
-	
-	private void bingoCard() {
-		
-		window.setLayout(null);
-		
-		window.add(new BingoCardPanel());
-		
-		JLabel gameNumberID = new JLabel("Game Number: " + gameNumber);
-		gameNumberID.setFont(new Font("", Font.PLAIN, 20));
-		gameNumberID.setBounds(sp[x], sp[y] - 100, 500, 45);
-		window.add(gameNumberID);
-		
-		for (int i = 0; i < 5; i++) {
-			JLabel bingoLetters = new JLabel(let[i], SwingConstants.CENTER);
-			bingoLetters.setFont(new Font("Comic Sans MS", Font.PLAIN, f + 10));
-			bingoLetters.setBackground(Color.yellow);
-			bingoLetters.setOpaque(true);
-			bingoLetters.setEnabled(true);
-			bingoLetters.setBounds(sp[x] + sl*i + ib*i + ob, sp[y] + ob, sl, sl);
-			window.add(bingoLetters);
+		if (screen == 0) {
 			
-			for (int j = 0; j < 5; j++) {
-				JLabel label = new JLabel(grid[i][j], SwingConstants.CENTER);
-				if (i == 2 && j == 2) 
-					label.setFont(new Font("Comic Sans MS", Font.BOLD, f / 2));
-				else 
-					label.setFont(new Font("Comic Sans MS", Font.PLAIN, f));
-				label.setBackground(Color.white);
-				label.setOpaque(true);
-			    label.setEnabled(true);
-				label.setBounds(sq[x] + sl*i + ib*(i - 1), sq[y] + sl*j + ib*(j - 1), sl, sl);		
-			    window.add(label);
-			}
+			prompt = new JLabel("Enter an integer game number into the pink box and click generate");
+			prompt.setFont(sf);
+			prompt.setBounds(25, 25, 800, 45);
+			add(prompt);
+			
+			tf = new JTextField("");
+			tf.setFont(sf);
+			tf.setBackground(Color.pink);
+			tf.setOpaque(true);
+			tf.setBounds(25, 75, 200, 45);
+			add(tf);
+			
+			notice = new JLabel("", SwingConstants.CENTER);
+			notice.setFont(sf);
+			notice.setBounds(225, 75, 200, 45);
+			add(notice);
+			
+			inputb = new JButton("Generate");
+			inputb.setFont(sf);
+			inputb.setBackground(Color.green);
+			inputb.setOpaque(true);
+			inputb.setBounds(25, 125, 200, 45);
+			inputb.addActionListener(new ActionListener() { 
+				  public void actionPerformed(ActionEvent e) { 
+		    			getUserInput();
+		    	}  
+		    }); 
+			add(inputb);
 		}
-		
-		setSize(WIDTH, HEIGHT);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    //setVisible(true);
-	}*/
-	
-	private void generateGrid(int s) {
-		NumberRandomizer nr = new NumberRandomizer(s);
-		grid = new String[5][5];
-		for (int i = 0; i < 5; i++) {
-			grid[i] = nr.gC(i);
+		if (screen == 1) {
+			removeAll();
+
 		}
-		grid[2][2] = "FR\nEE";
+		setVisible(true);    
 	}
 	
 	public void getUserInput() {
@@ -177,7 +85,38 @@ public class BingoCard extends JFrame {
     		int gridSeed = Integer.parseInt(tf.getText());
     		gameNumber = gridSeed;
     		System.out.println(gameNumber);
-    	}
+    		nr = new NumberRandomizer(gameNumber);
+    		generateGrid();
+    		generateHopper();
+    		
+    		remove(prompt);
+    		remove(notice);
+    		remove(tf);
+    		remove(inputb);
+    		
+    		bcp = new BingoCardPanel(grid);
+    		bcp.setBounds(0, 0, w, h);
+    		add(bcp);
+    		
+    		gnlabel = new JLabel("Game Number: " + gameNumber, SwingConstants.RIGHT);
+    		gnlabel.setFont(sf);
+    		gnlabel.setBounds(0, 25, w - 45, 45);
+    		add(gnlabel);
+    		
+    		drawb = new JButton("Draw Ball");
+    		drawb.setFont(sf);
+    		drawb.setBackground(new Color(0, 255, 255));
+    		drawb.setOpaque(true);
+    		drawb.setBounds(sp[x] - 210, sp[y] + ch - 45, 200, 45);
+			drawb.addActionListener(new ActionListener() { 
+				  public void actionPerformed(ActionEvent e) { 
+		    			drawBall();
+				  }  
+		    });
+    		add(drawb);
+    		
+    		repaint();
+		}
     	catch (Exception ex) {
     		notice.setText("INVALID INPUT");
     		notice.setBackground(Color.red);
@@ -186,7 +125,59 @@ public class BingoCard extends JFrame {
     	
 	}
 	
+	private void generateGrid() {
+		grid = new int[5][5];
+		for (int i = 0; i < 5; i++) {
+			grid[i] = nr.gC(i);
+		}
+		grid[2][2] = 0;
+		markGrid = new boolean[5][5];
+		markGrid[2][2] = true;
+	}
 	
+	private void generateHopper() {
+		hopper = new String[75];
+		hopperInts = nr.gH();
+		for (int i = 0; i < 75; i++) {
+			hopper[i] = let[((hopperInts[i] - 1) / 15)] + hopperInts[i]; 
+		}
+	}
+	
+    public void drawBall() {
+    	try {
+    		if (!won) {
+	    		bcp.draw(hopper[ballNo]);
+	    		for (int i = 0; i < 5; i++) {
+	    			for (int j = 0; j < 5; j++) {	
+	    				if (hopperInts[ballNo] == grid[i][j]) {
+	    					bcp.mark(i, j);
+	    					markGrid[i][j] = true;
+	    					if (checkWin()) {
+	    						bcp.declareWin();
+	    						won = true;
+	    					}
+	    				}
+	    			}
+	    		}
+	    		ballNo++;
+    		}
+    	}
+    	catch (Exception e) {}
+    }
+	
+	private boolean checkWin() {
+		for (int i = 0; i < 5; i++) {
+			if (markGrid[i][0] && markGrid[i][1] && markGrid[i][2] && markGrid[i][3] && markGrid[i][4])
+				return true;
+			if (markGrid[0][i] && markGrid[1][i] && markGrid[2][i] && markGrid[3][i] && markGrid[4][i])
+				return true;
+		}
+		if (markGrid[0][4] && markGrid[1][3] && markGrid[3][1] && markGrid[4][0])
+			return true;
+		if (markGrid[0][0] && markGrid[1][1] && markGrid[3][3] && markGrid[4][4])
+			return true;
+		return false;
+	}
 }
 
 
