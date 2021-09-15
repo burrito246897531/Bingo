@@ -8,7 +8,6 @@ public class NumberRandomizer {
 	private Random r;
 	
 	private int[] hopper;
-	private int ballNum = 0;
 	
 	public NumberRandomizer(int s) {
 		
@@ -23,10 +22,10 @@ public class NumberRandomizer {
 		return 0;
 	}
 	
-	public String[] gC(int col) {
-		String[] out = new String[5];
+	public int[] gC(int col) {
+		int[] out = new int[5];
 		for (int i = 0; i < 5; i++) {
-			out[i] = "" + (r.nextInt(15) + col * 15 + 1);
+			out[i] = r.nextInt(15) + col * 15 + 1;
 		}
 		while (hasRepeats(out)) {
 			out = gC(col);
@@ -34,12 +33,12 @@ public class NumberRandomizer {
 		return out;
 	}
 	
-	private boolean hasRepeats(String[] arr) {
+	private boolean hasRepeats(int[] arr) {
 		int b = 1;
 		for (int i = 0; i < 4; i++) {
 			b = 1;
 			while (b < 5 - i) {
-				if (arr[i].equals(arr[b + i])) 
+				if (arr[i] == (arr[b + i])) 
 					return true;
 				b++;
 			}
@@ -59,9 +58,6 @@ public class NumberRandomizer {
 		}		
 	}
 	
-	public int gNB() {
-		ballNum++;
-		return hopper[ballNum - 1];
-	}
+	public int[] gH() { return hopper; }
 	
 }
