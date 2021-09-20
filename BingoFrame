@@ -1,0 +1,351 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+import java.util.ArrayList;
+
+public class BingoFrame extends JFrame {
+	
+	private NumberRandomizer nr;
+	private ArrayList<BingoCard> bcArr;
+	private int[] hopperInts;
+	private String[] hopper;
+	private int ballNo = 0;
+	private String[] let = {"B", "I", "N", "G", "O"};
+	private boolean won;
+	private int ballsToWin;
+	private int[] ballsPerDay;
+	private int ballsPerDayIndex = 0;
+	private int hopperIntsIndex = 0;
+	private int listedWinners = 0;
+	
+	private JLabel prompt, lseed, lcards, ldays, lwinners, nseed, ncards, ndays, nwinners, gnlabel;
+	private JTextField tfseed, tfcards, tfdays, tfwinners;
+	private JTextArea drawnBalls, winners;
+	private JScrollPane dbScroll, wScroll, dbpScroll;
+	private String dbString = "Balls drawn:\n\n", wString = "Winners:\n\n";
+	private JButton inputb, drawb;
+	private DrawBallsPanel dbp;
+	private BingoCardPanel currentbcp;
+	private GroupLayout gl;
+	private Container window;
+	
+	private int screen = 0;
+	private Font sf = new Font("Comic Sans MS", Font.PLAIN, 20);
+	
+	private int gameNumber, numCards, numDays, numWinners;
+	
+	int sl = 100, ib = 4, ob = 25;
+	int cw = 5 * sl + 4 * ib + 2 * ob, ch = 6 * sl + 5 * ib + 2 * ob;
+	int w = WIDTH, h = ch;
+	int x = 0, y = 1;
+	int[] sq = {0 + ob, 0 + ob + sl + ib};
+	
+	private static final int WIDTH = 1200;
+	private static final int HEIGHT = 750;
+	
+	public BingoFrame() {
+		super("Bingo");
+		setSize(WIDTH, HEIGHT);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		
+		setLayout(null);
+		
+		if (screen == 0) {
+			prompt = new JLabel("Fill the following information");
+			prompt.setFont(sf);
+			prompt.setBounds(25, 25, w, 45);
+			add(prompt);
+			
+			lseed = new JLabel("Seed:");
+			lseed.setFont(sf);
+			lseed.setBounds(25, 75, w, 45);
+			add(lseed);
+			tfseed = new JTextField("");
+			tfseed.setFont(sf);
+			tfseed.setBackground(Color.pink);
+			tfseed.setOpaque(true);
+			tfseed.setBounds(25, 115, 200, 45);
+			add(tfseed);
+			nseed = new JLabel("", SwingConstants.CENTER);
+			nseed.setFont(sf);
+			nseed.setBounds(230, 115, 200, 45);
+    		nseed.setBackground(Color.red);
+			add(nseed);
+		
+			lcards = new JLabel("Number of cards to be generated:");
+			lcards.setFont(sf);
+			lcards.setBounds(25, 175, w, 45);
+			add(lcards);
+			tfcards = new JTextField("");
+			tfcards.setFont(sf);
+			tfcards.setBackground(Color.pink);
+			tfcards.setOpaque(true);
+			tfcards.setBounds(25, 215, 200, 45);
+			add(tfcards);
+			ncards = new JLabel("", SwingConstants.CENTER);
+			ncards.setFont(sf);
+			ncards.setBounds(230, 215, 200, 45);
+    		ncards.setOpaque(true);
+			add(ncards);
+			
+			ldays = new JLabel("Number of days Bingo is to be played over:");
+			ldays.setFont(sf);
+			ldays.setBounds(25, 275, w, 45);
+			add(ldays);
+			tfdays = new JTextField("");
+			tfdays.setFont(sf);
+			tfdays.setBackground(Color.pink);
+			tfdays.setOpaque(true);
+			tfdays.setBounds(25, 315, 200, 45);
+			add(tfdays);
+			ndays = new JLabel("", SwingConstants.CENTER);
+			ndays.setFont(sf);
+			ndays.setBounds(230, 315, 200, 45);
+    		ndays.setOpaque(true);
+			add(ndays);
+			
+			lwinners = new JLabel("Number of winners desired:");
+			lwinners.setFont(sf);
+			lwinners.setBounds(25, 375, w, 45);
+			add(lwinners);
+			tfwinners = new JTextField("");
+			tfwinners.setFont(sf);
+			tfwinners.setBackground(Color.pink);
+			tfwinners.setOpaque(true);
+			tfwinners.setBounds(25, 415, 200, 45);
+			add(tfwinners);
+			nwinners = new JLabel("", SwingConstants.CENTER);
+			nwinners.setFont(sf);
+			nwinners.setBounds(230, 415, 200, 45);
+    		nwinners.setOpaque(true);
+			add(nwinners);
+
+			
+			inputb = new JButton("Play!");
+			inputb.setFont(sf);
+			inputb.setBackground(Color.green);
+			inputb.setOpaque(true);
+			inputb.setBounds(25, 475, 200, 45);
+			inputb.addActionListener(new ActionListener() { 
+				  public void actionPerformed(ActionEvent e) { 
+		    			getUserInput();
+		    	}  
+		    }); 
+			add(inputb);
+		}
+		if (screen == 1) {
+			removeAll();
+		}
+		setVisible(true);    
+	}
+	
+	public void getUserInput() {
+    	boolean gotSeedInput = false, gotCardsInput = false, gotDaysInput = false, gotWinnersInput = false;
+		if (!gotSeedInput) {
+	    	try {
+	    		gameNumber = Integer.parseInt(tfseed.getText());
+	    		gotSeedInput = true;
+				nseed.setText("");
+				nseed.setOpaque(false);
+			}
+	    	catch (Exception ex) {
+	    		nseed.setText("INVALID INPUT");
+	    		nseed.setOpaque(true);
+	    	}
+		}
+		else {
+			nseed.setText("");
+			nseed.setOpaque(false);
+		}
+		if (!gotCardsInput) {
+			try {
+	    		numCards = Integer.parseInt(tfcards.getText());
+	    		gotCardsInput = true;
+				ncards.setText("");
+				ncards.setOpaque(false);
+			}
+	    	catch (Exception ex) {
+	    		ncards.setText("INVALID INPUT");
+	    		ncards.setBackground(Color.red);
+	    	}
+		}
+		else {
+			ncards.setText("");
+			ncards.setOpaque(false);
+		}
+		if (!gotDaysInput) {
+			try {
+	    		numDays = Integer.parseInt(tfdays.getText());
+	    		gotDaysInput = true;
+				ndays.setText("");
+				ndays.setOpaque(false);
+			}
+	    	catch (Exception ex) {
+	    		ndays.setText("INVALID INPUT");
+	    		ndays.setBackground(Color.red);
+	    	}
+		}
+		else {
+			ndays.setText("");
+			ndays.setOpaque(false);
+		}
+		if (!gotWinnersInput) {
+			try {
+	    		numWinners = Integer.parseInt(tfwinners.getText());
+	    		gotWinnersInput = true;
+				nwinners.setText("");
+				nwinners.setOpaque(false);
+			}
+	    	catch (Exception ex) {
+	    		nwinners.setText("INVALID INPUT");
+	    		nwinners.setBackground(Color.red);
+	    	}
+		}
+		else {
+			nwinners.setText("");
+			nwinners.setOpaque(false);
+		}
+		
+		
+    	if (gotSeedInput && gotCardsInput && gotDaysInput && gotWinnersInput) {
+    		System.out.println(gameNumber);
+    		nr = new NumberRandomizer(gameNumber);
+    		bcArr = new ArrayList<>();
+    		for (int i = 0; i < numCards; i++) {
+    			bcArr.add(new BingoCard(i, nr));
+    		}
+    		
+    		generateHopper();
+    		runSimulation();
+    		
+    		remove(prompt);
+    		remove(lseed);
+    		remove(tfseed);
+    		remove(nseed);
+    		remove(lcards);
+    		remove(tfcards);
+    		remove(ncards);
+    		remove(ldays);
+    		remove(tfdays);
+    		remove(ndays);
+    		remove(lwinners);
+    		remove(tfwinners);
+    		remove(nwinners);
+    		remove(inputb);
+    		
+    		currentbcp = bcArr.get(0).getbcp();
+    		currentbcp.setBounds(200, 0, cw, h);
+    		add(currentbcp);
+    		
+    		dbp = new DrawBallsPanel();
+    		dbp.setBounds(0, 0, 200, 625);
+    		dbpScroll = new JScrollPane(dbp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    		dbpScroll.setBounds(0, 0, 200, 625);
+    		add(dbpScroll);
+    		
+    		gnlabel = new JLabel("Game Number: " + gameNumber, SwingConstants.RIGHT);
+    		gnlabel.setFont(sf);
+    		gnlabel.setBounds(0, 25, w - 45, 45);
+    		add(gnlabel);
+    		
+    		drawnBalls = new JTextArea(dbString);
+    		drawnBalls.setFont(sf);
+    		drawnBalls.setBounds(cw + 200, 200, 200, ch - 200);
+    		drawnBalls.setEditable(false);
+    		dbScroll = new JScrollPane(drawnBalls);
+    		dbScroll.setBounds(cw + 200, 200, 150, ch - 200);
+    		add(dbScroll);
+    		
+    		winners = new JTextArea(wString);
+    		winners.setFont(sf);
+    		winners.setBounds(cw + 350, 200, 200, ch - 200);
+    		winners.setEditable(false);
+    		wScroll = new JScrollPane(winners);
+    		wScroll.setBounds(cw + 350, 200, 200, ch - 200);
+    		add(wScroll);
+    		
+    		drawb = new JButton("Draw Balls");
+    		drawb.setFont(sf);
+    		drawb.setBackground(new Color(0, 255, 255));
+    		drawb.setOpaque(true);
+    		drawb.setBounds(0, ch - 45, 200, 45);
+			drawb.addActionListener(new ActionListener() { 
+				  public void actionPerformed(ActionEvent e) { 
+		    			drawBall();
+				  }  
+		    });
+    		add(drawb);
+    		
+    		repaint();
+    	}
+	}
+	
+	private void generateHopper() {
+		hopper = new String[75];
+		hopperInts = nr.gH();
+		for (int i = 0; i < 75; i++) {
+			hopper[i] = let[((hopperInts[i] - 1) / 15)] + hopperInts[i]; 
+			System.out.println(hopper[i] + "\t" + hopperInts[i]);
+		}
+	}
+	
+    public void drawBall() {
+    	try {
+    		String[] temp = new String[ballsPerDay[ballsPerDayIndex]];
+    		dbString += "Day " + (ballsPerDayIndex + 1) + ":\n";
+    		for (int i = 0; i < ballsPerDay[ballsPerDayIndex]; i++) {
+    			temp[i] = hopper[hopperIntsIndex];
+    			for (BingoCard bc: bcArr) {
+    				bc.draw(hopperInts[hopperIntsIndex]);
+    				if (bc.getWonOnDraw() == hopperIntsIndex && listedWinners < numWinners) {
+    					wString += "Bingo card " + bc.getId() + " won on draw " + hopperIntsIndex + "\n\n";
+    					listedWinners++;
+    				}
+    			}
+    			dbString += hopper[hopperIntsIndex] + "\n";
+    			hopperIntsIndex++;
+    		}
+			dbp.setBalls(temp);
+    		dbString += "\n";
+    		ballsPerDayIndex++;
+    		drawnBalls.setText(dbString);
+    		winners.setText(wString);
+    	}
+    	catch (Exception e) {}
+    }
+	
+    private void runSimulation() {
+    	boolean simulationInProgress = true;
+    	int count = 0;
+    	for (int i = 0; i < 75; i++) {
+    		if (simulationInProgress) {
+    			for (int j = 0; j < bcArr.size(); j++) {
+    				bcArr.get(j).draw(hopperInts[i]);
+    				if (bcArr.get(j).checkWin() && !bcArr.get(j).getWon()) {
+    					bcArr.get(j).declareWon(i);
+    					count++;
+    				}
+    			}
+    		}
+    		if (count >= numWinners && ballsToWin == 0) {
+    			simulationInProgress = false;
+    			ballsToWin = i;
+    		}
+    	}
+    	for (int i = 0; i < bcArr.size(); i++) {
+    		bcArr.get(i).resetMarkGrid();
+    	}
+    	ballsPerDay = new int[numDays];
+    	for (int i = 0; i < ballsToWin + 1; i++) {
+    		ballsPerDay[i % numDays]++;
+    	}
+    	for (int i = 0; i < ballsPerDay.length; i++) {
+    		System.out.print(ballsPerDay[i] + "\t");
+    	}
+    	System.out.println(gameNumber + " " + numCards + " " + numDays + " " + numWinners);
+    }
+}
+
+
