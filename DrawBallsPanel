@@ -1,0 +1,47 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class DrawBallsPanel extends JPanel {
+	
+	private boolean paintable;
+	private String[] balls;
+	private int height = 625;
+	private int width = 200;
+	private int day = 0;
+	
+	private Font sf = new Font("Comic Sans MS", Font.PLAIN, 50);
+	private FontMetrics m = getFontMetrics(sf);
+	
+	public DrawBallsPanel() {
+	}
+	
+	public void setBalls(String[] b) {
+		balls = b;
+		height = balls.length * 160 + 155;
+		for (String str: balls) {
+			System.out.print(str + "\t");
+		}
+		paintable = true;
+		repaint();
+	}
+	
+	public void paint(Graphics g) {
+		g.clearRect(0, 0, width, height);
+		g.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
+		g.drawString("Day " + day, 25, 40);
+		day++;
+		g.setFont(sf);
+		
+		if (paintable) {
+			for (int i = 0; i < balls.length; i++) {
+				g.setColor(Color.black);
+				g.fillOval(35, 160*i+75, 130, 130);
+				g.setColor(Color.blue);
+				g.fillOval(40, 160*i+80, 120, 120);
+				g.setColor(Color.white);
+				g.drawString(balls[i], 100-m.stringWidth(balls[i])/2, 160*i+155);
+			}
+		}
+	}
+	
+}
