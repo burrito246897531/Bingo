@@ -10,9 +10,7 @@ public class BingoFrame extends JFrame {
 	private ArrayList<BingoCard> bcArr;
 	private int[] hopperInts;
 	private String[] hopper;
-	private int ballNo = 0;
 	private String[] let = {"B", "I", "N", "G", "O"};
-	private boolean won;
 	private int ballsToWin;
 	private int[] ballsPerDay;
 	private int ballsPerDayIndex = 0;
@@ -20,15 +18,14 @@ public class BingoFrame extends JFrame {
 	private int listedWinners = 0;
 	
 	private JLabel prompt, lseed, lcards, ldays, lwinners, nseed, ncards, ndays, nwinners, gnlabel;
-	private JTextField tfseed, tfcards, tfdays, tfwinners;
+	private JTextField tfseed, tfcards, tfdays, tfwinners, tfdisplaycard;
 	private JTextArea drawnBalls, winners;
 	private JScrollPane dbScroll, wScroll, dbpScroll;
 	private String dbString = "Balls drawn:\n\n", wString = "Winners:\n\n";
-	private JButton inputb, drawb;
+	private JButton inputb, drawb, displaycardb;
 	private DrawBallsPanel dbp;
 	private BingoCardPanel currentbcp;
-	private GroupLayout gl;
-	private Container window;
+	private int currentbcid;
 	
 	private int screen = 0;
 	private Font sf = new Font("Comic Sans MS", Font.PLAIN, 20);
@@ -135,9 +132,6 @@ public class BingoFrame extends JFrame {
 		    }); 
 			add(inputb);
 		}
-		if (screen == 1) {
-			removeAll();
-		}
 		setVisible(true);    
 	}
 	
@@ -235,19 +229,19 @@ public class BingoFrame extends JFrame {
     		remove(nwinners);
     		remove(inputb);
     		
-    		currentbcp = bcArr.get(0).getbcp();
+    		currentbcp = bcArr.get(currentbcid).getbcp();
     		currentbcp.setBounds(200, 0, cw, h);
     		add(currentbcp);
     		
     		dbp = new DrawBallsPanel();
     		dbp.setBounds(0, 0, 200, 625);
-    		dbpScroll = new JScrollPane(dbp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    		dbpScroll = new JScrollPane(dbp);
     		dbpScroll.setBounds(0, 0, 200, 625);
-    		add(dbpScroll);
+    		add(dbp);
     		
     		gnlabel = new JLabel("Game Number: " + gameNumber, SwingConstants.RIGHT);
     		gnlabel.setFont(sf);
-    		gnlabel.setBounds(0, 25, w - 45, 45);
+    		gnlabel.setBounds(0, 0, w - 45, 45);
     		add(gnlabel);
     		
     		drawnBalls = new JTextArea(dbString);
@@ -277,7 +271,24 @@ public class BingoFrame extends JFrame {
 				  }  
 		    });
     		add(drawb);
-    		
+    	
+    		tfdisplaycard = new JTextField();
+    		tfdisplaycard.setFont(sf);
+    		tfdisplaycard.setBackground(Color.pink);
+    		tfdisplaycard.setOpaque(true);
+    		tfdisplaycard.setBounds(cw+350, 50, 200, 45);
+    		add(tfdisplaycard);
+    		displaycardb = new JButton("Display Card");
+    		displaycardb.setFont(sf);
+    		displaycardb.setBackground(Color.green);
+    		displaycardb.setOpaque(true);
+    		displaycardb.setBounds(cw+200, 50, 150, 45);
+			displaycardb.addActionListener(new ActionListener() { 
+				  public void actionPerformed(ActionEvent e) { 
+		    			displayCard();
+				  }  
+		    });
+			add(displaycardb);
     		repaint();
     	}
 	}
@@ -308,6 +319,7 @@ public class BingoFrame extends JFrame {
     			hopperIntsIndex++;
     		}
 			dbp.setBalls(temp);
+			dbp.incrementDay();
     		dbString += "\n";
     		ballsPerDayIndex++;
     		drawnBalls.setText(dbString);
@@ -345,6 +357,19 @@ public class BingoFrame extends JFrame {
     		System.out.print(ballsPerDay[i] + "\t");
     	}
     	System.out.println(gameNumber + " " + numCards + " " + numDays + " " + numWinners);
+    }
+    
+    public void displayCard() {
+    	try {
+    		currentbcid = Integer.parseInt(tfdisplaycard.getText());
+    		remove(currentbcp);
+    		currentbcp = new BingoCardPanel();
+    		currentbcp = bcArr.get(currentbcid).getbcp();
+    		add(currentbcp);
+    		System.out.println(currentbcid);
+    		repaint();
+    	}
+    	catch (Exception e) {}
     }
 }
 
