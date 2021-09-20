@@ -1,11 +1,11 @@
 
 public class Main {
 
-	static BingoCard bc;
+	static BingoFrame bf;
 	
 	public static void main(String args[]) {
 		
-		bc = new BingoCard();
+		bf = new BingoFrame();
 		
 	}
 	
